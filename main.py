@@ -1,6 +1,7 @@
 import os
 import requests
 import subprocess
+from vod import Vod
 
 # good practice to store api creds via environment variables
 client_id = os.environ['TWITCH_CLIENT_ID']
@@ -12,6 +13,10 @@ def auth_token():
     return r.json()['access_token']
 
 def get_vod(* , latest = 1) -> list[str]:
+    '''
+    Gets and returns a list of x latest vods from streamer    
+    '''
+
     payload = {                      # creates query string from these key/values
         'user_id' : 22484632,        # this is forsans id
         'first' : latest             # number of items to return
@@ -21,20 +26,14 @@ def get_vod(* , latest = 1) -> list[str]:
         'Client-Id' : client_id
     }
     r = requests.get('https://api.twitch.tv/helix/videos', headers=headers , params=payload)
-    print(r.json())
 
+    vod_data = []
 
+    for vod_json in r.json()['data']:
+        vod_data.append(Vod(vod_json))
 
+    return vod_data
 
-
-    vod_id = [] 
-
-    for vod in r.json()['data']:        # {'data': [{vod_info}], [{vod_info1}]}
-        nums = [char for char in vod['url'] if char.isdigit()]              # extract id
-        vod_id.append(''.join(nums))
-
-    print(vod_id)
-    return vod_id
 
 
 def download_vod(id, *, start: int, end: int, name = None):      # usage: TwitchDownloaderCLI.exe videodownload --id <vod-id-here> -o <name>.mp4
@@ -59,8 +58,21 @@ def download_vod(id, *, start: int, end: int, name = None):      # usage: Twitch
     if not os.path.isfile(f'vods/{name}.mp4'):
         raise Exception("could not download vod :(")
 
+def _time_format(time : str) -> int:  
+    '''converts HH:MM:SS to seconds'''
+    times = time.split(':')
+    hrs = int(times[0])
+    mins = int(times[1])
+    secs = int(times[2])
+
+    return (hrs*60*60) + (mins*60) + secs
+
+    
+
+
 
 
 # download_vod(1871917822, start=23000, end = 24000, name='test')
 # download_vod(get_vod_id()[0], start = 1000, end = 2000)
-get_vod()
+print(get_vod(latest=2)[0])
+print(_time_format('14:59:59'))
