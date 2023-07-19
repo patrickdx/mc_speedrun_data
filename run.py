@@ -1,7 +1,7 @@
 
 import pandas as pd
-
-
+import sys
+import time
 
 
 ''' 
@@ -41,3 +41,20 @@ print(df.dtypes)
 
 
 
+animation = ['.  ','.. ','...']
+count = 0
+
+def progress(current, total, status=''):      # question is what to base progress of? percentage of vod? percentage of run?
+    global count 
+
+    bar_len = 60                        # 60 chars long
+    filled = current / total            # actual progress percentage
+    filledBars = '=' * round(bar_len * filled)  # 9.6 -> 10 bars 
+    rest = '-' * (bar_len - len(filledBars))
+    sys.stdout.write("[%s] %0.1f %s %s\r" % (filledBars + rest, filled*100, status, animation[count % 3]))  
+    count += 1
+    
+
+for i in range(1,101):
+    progress(i,100, status = 'generating god seed')
+    time.sleep(0.5)
