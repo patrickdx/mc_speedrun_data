@@ -4,8 +4,8 @@ import subprocess
 from vod import Vod
 
 # good practice to store api creds via environment variables
-client_id = os.environ['TWITCH_CLIENT_ID']
-client_secret = os.environ['TWITCH_CLIENT_SECRET']
+client_id = os.environ['twitch_client_id']
+client_secret = os.environ['twitch_client_secret']
 
 
 def auth_token():
