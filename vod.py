@@ -1,6 +1,6 @@
 class Vod:
     '''
-    Class representation of Twitch Video Vod. Properties are all taken from the Twitch API json data. 
+    Class representation of Twitch Video Vod metadata. Properties are all taken from the Twitch API json data. 
     '''
     def __init__(self, dict_json) -> None: 
         

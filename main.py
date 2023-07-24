@@ -2,6 +2,7 @@ import os
 import requests
 import subprocess
 from vod import Vod
+import argparse
 
 # good practice to store api creds via environment variables
 client_id = os.environ['twitch_client_id']
@@ -12,13 +13,13 @@ def auth_token():
     r = requests.post('https://id.twitch.tv/oauth2/token', data = {'client_id' : client_id, 'client_secret' : client_secret, 'grant_type' : 'client_credentials'})
     return r.json()['access_token']
 
-def get_vod(* , latest = 1) -> list[str]:
+def get_vod(id, *, latest = 1) -> list[str]:
     '''
     Gets and returns a list of x latest vods from streamer    
     '''
 
     payload = {                      # creates query string from these key/values
-        'user_id' : 22484632,        # this is forsans id
+        'user_id' : id,        # this is forsans id
         'first' : latest             # number of items to return
     }
     headers = {                 # idk the headers are like the verification details n shit (google)
@@ -68,11 +69,21 @@ def _time_format(time : str) -> int:
     return (hrs*60*60) + (mins*60) + secs
 
     
+# if __name__ == '__main__():':       # executes code When the this file is run as a script i.e. python main.py, but not when its imported as a module
+#     '''
+#     analyzes the first 
+#     '''
+
+#     forsen_id = 22484632
+#     parser = argparse.ArgumentParser(description= 'downloads some vods from some streamer')
+#     parser.add_argument("")
+#     parser.add_argument
+
 
 
 
 
 # download_vod(1871917822, start=23000, end = 24000, name='test')
-# download_vod(get_vod_id()[0], start = 1000, end = 2000)
-print(get_vod(latest=2)[0])
+download_vod('1879662076', start = 2000, end = 10000)
+# print(get_vod()[0])
 print(_time_format('14:59:59'))
