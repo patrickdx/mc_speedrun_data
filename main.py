@@ -44,16 +44,14 @@ def download_vod(id, *, start: int, end: int, name = None):      # usage: Twitch
     -q : quality 1080p60, 720p60 ...
     '''
     name = str(id) if (name is None) else name
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    save_dir = current_dir + "\\vods"                                # the path where the vods get saved
+    save_dir = "vods"                                # the path where the vods get saved
 
-    # command = current_dir + '\TwitchDownloaderCLI.exe videodownload --id %d -b %d -e %d --quality 720p60 -o vods/%s.mp4' % (id, start, end, name)
-    command = current_dir + f'\TwitchDownloaderCLI.exe videodownload --id {id} -b {start} -e {end} --quality 720p60 -o {save_dir}\{name}.mp4'
+    command = f'TwitchDownloaderCLI.exe videodownload --id {id} -b {start} -e {end} --quality 720p60 -o {save_dir}\{name}.mp4'
 
     print(command)
     print("Downloading vod...")
     
-    subprocess.run(command.split(" "), shell=True)
+    subprocess.run(command.split(" "), shell=True)          # this gets run at the project root
 
     # check if there is a file at that path
     if not os.path.isfile(f'vods/{name}.mp4'):
@@ -83,7 +81,9 @@ def _time_format(time : str) -> int:
 
 
 
-# download_vod(1871917822, start=23000, end = 24000, name='test')
+download_vod('1889111156', start= 3600, end = 3700)
+
 # download_vod('1879662076', start = 2000, end = 10000)
-# print(get_vod()[0])
-print(_time_format('14:59:59'))
+
+
+
