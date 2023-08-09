@@ -1,7 +1,7 @@
 import numpy as np 
 import cv2 as cv 
 
-def display(title, img):
+def display(title: str, img: Mat):
     cv.imshow(title, img)
     cv.waitKey(0)
     cv.destroyAllWindows()
