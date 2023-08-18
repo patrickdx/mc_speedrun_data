@@ -13,17 +13,16 @@ def match_single(img, temp: Template) -> Match:
     # If match:
     match = Match(top_left, bottom_right, temp)
     img1 = img.copy()
-    match.drawRect(img1)
+    match.draw(img1)
     return match 
 
     # Else:
     return None
-def match_Template(img, temps: list[Template]) -> list[Match]:
+def match_Template(img, temps: list[Template], expected = 1) -> list[Match]:
     '''
     This function uses thresholding to match multiple templates at once. Templates may match more than once
     or incorrectly if threshold value is too low.
     '''
-
 
     matches = [] 
 
@@ -31,14 +30,13 @@ def match_Template(img, temps: list[Template]) -> list[Match]:
         res = cv.matchTemplate(img, temp.img, cv.TM_CCOEFF_NORMED)
         locations = np.where(res >= temp.THRESHOLD)       # returns indexes of values over threshold (which means higher probability of match)
 
-        
         if (locations[0].size == 0 and locations[1].size == 0):     # match not found
             continue
 
         else:  
             for pt in zip(locations[1], locations[0]):         # (rows, cols) swap them because we want (x,y) coords
                 match = Match(pt, (pt[0] + temp.width, pt[1] + temp.height), temp)
-                print(match ,"found.")
+                print(match , "found.")
                 matches.append(match)
                 
     matches.sort(key = lambda x : x.pt1[0])         # sort by x position
@@ -46,8 +44,22 @@ def match_Template(img, temps: list[Template]) -> list[Match]:
 
 
         
+def filter_matches(res, expected):
+    '''
+    Removes duplicate matches that are most certain of the same template, resulting from not having 
+    an adequate threshold value.
+    '''
+    threshold = 0.5
+    
+    # or we can keep raising threshold until theres only expected amount of matches left
+    locations = np.where(res >= threshold)
 
-
+    while (locations[0].size > expected):       # this gets more and more selective
+        threshold += 0.03
+        locations = np.where(res >= threshold)
+                  
+    print(f'found{locations[0].size} optimal matches')
+    return locations
 
 
     

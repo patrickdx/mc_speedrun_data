@@ -60,19 +60,14 @@ class ROI(Enum):
 
 class Images(Enum): #https://softwareengineering.stackexchange.com/questions/357405/whats-the-most-idiomatic-way-to-make-a-collection-of-enum-enum-in-python
     IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location
-
-
-    # achievements = {
-    #     'nether_entry' : Template('sample.png', 'nether entry'),
-    #     'bastion' : Template('sample.png', 'found bastion'),
-    #     'fortress': Template('sample.png', 'found fortress'),
-    #     'nether_exit' : Template('sample.png', 'nether exit'),
-    #     'stronghold' :  Template('sample.png', 'found stronghold'),
-    #     'end_dimension' : Template('sample.png', 'enter the end'),
-    #     'dragon_kill' :  Template('sample.png', 'dragon kill'),
-    #     'run_finish' :  Template('sample.png', 'completed run'),
-    # }
-
+    
+    nether_entry = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
+    bastion = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
+    fortress = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
+    nether_exit = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')
+    stronghold = Template(IMG_PATH + 'adv_stronghold.png', value = 'stronghold')
+    end = Template(IMG_PATH + 'adv_end.png', value = 'end')
+    run_finish = Template(IMG_PATH + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
 
   
     zero  = Template(IMG_PATH + '0.png', value=0)
@@ -87,7 +82,7 @@ class Images(Enum): #https://softwareengineering.stackexchange.com/questions/357
     nine  =  Template(IMG_PATH + '9.png', value=9)
 
 
-    def template(self):
+    def template(self) -> Template:
         return self.value
 
     @classmethod            # no longer requiring instance aka Images.zero.numbers()
@@ -95,6 +90,6 @@ class Images(Enum): #https://softwareengineering.stackexchange.com/questions/357
         return [cls.zero, cls.one, cls.two, cls.three, cls.four, cls.five, cls.six, cls.seven, cls.eight, cls.nine]
 
     @classmethod
-    def achievements(self):
-        return []
+    def achievements(cls):
+        return [cls.nether_entry, cls.bastion, cls.fortress, cls.nether_exit, cls.stronghold, cls.end, cls.run_finish]
 
