@@ -18,7 +18,7 @@ def match_single(img, temp: Template) -> Match:
 
     # Else:
     return None
-def match_Template(img, temps: list[Template], expected = 1) -> list[Match]:
+def match_Template(img, temps: list[Template]) -> list[Match]:
     '''
     This function uses thresholding to match multiple templates at once. Templates may match more than once
     or incorrectly if threshold value is too low.
@@ -36,18 +36,20 @@ def match_Template(img, temps: list[Template], expected = 1) -> list[Match]:
         else:  
             for pt in zip(locations[1], locations[0]):         # (rows, cols) swap them because we want (x,y) coords
                 match = Match(pt, (pt[0] + temp.width, pt[1] + temp.height), temp)
-                print(match , "found.")
+                # print(match , "found.")
                 matches.append(match)
                 
     matches.sort(key = lambda x : x.pt1[0])         # sort by x position
+    print(len(matches))
     return matches 
 
 
         
-def filter_matches(res, expected):
+def filter_matches(res: np.ndarray, expected):
     '''
     Removes duplicate matches that are most certain of the same template, resulting from not having 
     an adequate threshold value.
+    @expected: the expected number of matches of image
     '''
     threshold = 0.5
     

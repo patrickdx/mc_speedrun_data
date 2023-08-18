@@ -31,7 +31,7 @@ class Template:        # Singleton (for now)
         return f'{self.desc} template by {self.width} x {self.height}'
 
 
-class ROI(Enum):
+class ROI(Enum):        # enum is better because immutable/iterable/can define functionality on the enum members.
     '''
     The region of interest of the video frame to match using the template.   (top_left, bottom_right)
     Essentially places to 'look' during the attempt to match the template. (x1,y1) , (x2,y2)
@@ -40,7 +40,7 @@ class ROI(Enum):
     achievement =  ((1018,0),(1280,131))
     igt_timer = ((1121,53),(1261,72))
 
-    def crop(self, img : Mat):        # returns cropped version of original image. for template matching purposes it should always be grayscale
+    def crop(self, img : Mat):        # returns cropped version of original image. for template matching purposes it should always be grayscale (igt_timer.crop())
         img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         dim = self.value 
         x = dim[0][0], dim[1][0]
@@ -55,41 +55,34 @@ class ROI(Enum):
         pt2 = self.value[1]
         return f'{pt1} x {pt2}'
 
-# img = np.zeros((1000,1000))
-# img1 = Frame.achievem
 
-class Images(Enum): #https://softwareengineering.stackexchange.com/questions/357405/whats-the-most-idiomatic-way-to-make-a-collection-of-enum-enum-in-python
+
+class Images():
     IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location
     
-    nether_entry = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
-    bastion = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
-    fortress = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
-    nether_exit = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')
-    stronghold = Template(IMG_PATH + 'adv_stronghold.png', value = 'stronghold')
-    end = Template(IMG_PATH + 'adv_end.png', value = 'end')
-    run_finish = Template(IMG_PATH + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
+    NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
+    BASTION = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
+    FORTRESS = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
+    NETHER_EXIT = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')
+    STRONGHOLD = Template(IMG_PATH + 'adv_stronghold.png', value = 'stronghold')
+    END = Template(IMG_PATH + 'adv_end.png', value = 'end')
+    RUN_FINISH = Template(IMG_PATH + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
 
   
-    zero  = Template(IMG_PATH + '0.png', value=0)
-    one  =  Template(IMG_PATH + '1.png', value=1)
-    two  = Template(IMG_PATH + '2.png', value=2)
-    three  =  Template(IMG_PATH + '3.png', value=3) 
-    four  =  Template(IMG_PATH + '4.png', value=4)
-    five  =  Template(IMG_PATH + '5.png', value=5)
-    six  = Template(IMG_PATH + '6.png', value=6)
-    seven  =  Template(IMG_PATH + '7.png', value=7)
-    eight  =  Template(IMG_PATH + '8.png', value=8)
-    nine  =  Template(IMG_PATH + '9.png', value=9)
+    ZERO  = Template(IMG_PATH + '0.png', value=0, THRESHOLD= 0.9)
+    ONE  =  Template(IMG_PATH + '1.png', value=1, THRESHOLD= 0.9)
+    TWO  = Template(IMG_PATH + '2.png', value=2, THRESHOLD= 0.9)
+    THREE  =  Template(IMG_PATH + '3.png', value=3, THRESHOLD= 0.9) 
+    FOUR  =  Template(IMG_PATH + '4.png', value=4, THRESHOLD= 0.9)
+    FIVE  =  Template(IMG_PATH + '5.png', value=5, THRESHOLD= 0.9)
+    SIX  = Template(IMG_PATH + '6.png', value=6, THRESHOLD= 0.9)
+    SEVEN  =  Template(IMG_PATH + '7.png', value=7, THRESHOLD= 0.9)
+    EIGHT  =  Template(IMG_PATH + '8.png', value=8, THRESHOLD= 0.9)
+    NINE  =  Template(IMG_PATH + '9.png', value=9, THRESHOLD= 0.9)
 
+    def numbers() -> list[Template]:
+        return [Images.ZERO, Images.ONE, Images.TWO, Images.THREE, Images.FOUR, Images.FIVE, Images.SIX, Images.SEVEN, Images.EIGHT, Images.NINE]
 
-    def template(self) -> Template:
-        return self.value
-
-    @classmethod            # no longer requiring instance aka Images.zero.numbers()
-    def numbers(cls):
-        return [cls.zero, cls.one, cls.two, cls.three, cls.four, cls.five, cls.six, cls.seven, cls.eight, cls.nine]
-
-    @classmethod
-    def achievements(cls):
-        return [cls.nether_entry, cls.bastion, cls.fortress, cls.nether_exit, cls.stronghold, cls.end, cls.run_finish]
+    def achievements() -> list[Template]:
+        return [Images.NETHER_ENTRY, Images.BASTION, Images.FORTRESS, Images.NETHER_EXIT, Images.STRONGHOLD, Images.END, Images.RUN_FINISH]
 
