@@ -63,7 +63,7 @@ class Images():
     NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
     BASTION = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
     FORTRESS = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
-    NETHER_EXIT = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')
+    NETHER_EXIT = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')         # this should be found using timer freeze
     STRONGHOLD = Template(IMG_PATH + 'adv_stronghold.png', value = 'stronghold')
     END = Template(IMG_PATH + 'adv_end.png', value = 'end')
     RUN_FINISH = Template(IMG_PATH + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
@@ -80,9 +80,11 @@ class Images():
     EIGHT  =  Template(IMG_PATH + '8.png', value=8, THRESHOLD= 0.9)
     NINE  =  Template(IMG_PATH + '9.png', value=9, THRESHOLD= 0.9)
 
-    def numbers() -> list[Template]:
-        return [Images.ZERO, Images.ONE, Images.TWO, Images.THREE, Images.FOUR, Images.FIVE, Images.SIX, Images.SEVEN, Images.EIGHT, Images.NINE]
+    def numbers() -> tuple[Template]:
+        return (Images.ZERO, Images.ONE, Images.TWO, Images.THREE, Images.FOUR, Images.FIVE, Images.SIX, Images.SEVEN, Images.EIGHT, Images.NINE)
 
     def achievements() -> list[Template]:
         return [Images.NETHER_ENTRY, Images.BASTION, Images.FORTRESS, Images.NETHER_EXIT, Images.STRONGHOLD, Images.END, Images.RUN_FINISH]
 
+    def run_order() -> list[Template]:
+        return [Images.NETHER_ENTRY, [Images.BASTION, Images.FORTRESS], Images.NETHER_EXIT, Images.STRONGHOLD, Images.END]    # [] is when order doesnt matter 

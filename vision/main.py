@@ -4,7 +4,9 @@ from template import ROI
 from template import Images
 from matcher import match_Template
 import spreadsheet
- 
+from collections import deque  # fast appends and pops from both ends. For example:
+
+
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))    # This is your Project Root
 
 def display(str, img):
@@ -48,21 +50,19 @@ def seek_timer(frame):      # triggered only when found new milestone
 
 
 
-def seek_achievement(frame, achievement : Images) -> bool:     # Tries to match Images returns true if found / plays with the results 
+def seek_achievement(frame, achievement : Images) -> bool:     # Checks if match was successful and matched expected amount of items.
     
     cropped = ROI.achievement.crop(frame)
     template = achievement
     matches = match_Template(cropped, [template])
     assert len(matches) == 1, 'matched more than 1 achievment'
-
+    
     if len(matches) == 1:
         achievement = matches[0].template.value
 
         # record achivement and time
         print(f'achivement{achievement}')
         display('achievement', cropped)
-        global chrono
-        chrono.remove(matches[0].template)
         return True 
     
     return False
@@ -76,18 +76,25 @@ path = '../vods/example.mp4'
 vid = cv.VideoCapture(path)
 if not vid.isOpened(): raise FileNotFoundError("Video not found...")
 
-chrono = Images.achievements()     
-
+run_order = deque(Images.run_order())      # nether -> bastion/fort -> stronghold
 ret, frame = vid.read()     # returns false if frame is unable to be read
 next = 0
 
 while ret: 
-    curr = vid.get(cv.CAP_PROP_POS_FRAMES)      # index of the frame to be read next
-    total = vid.get(cv.CAP_PROP_FRAME_COUNT)
+    curr, total = vid.get(cv.CAP_PROP_POS_FRAMES), vid.get(cv.CAP_PROP_FRAME_COUNT)
+    
     spreadsheet.progress(curr, total, status = 'Reading Frame')
     # print(f'Looking for {chrono[next]}')
     
-    print(seek_timer(frame))
+
+    if isinstance(run_order[0] , tuple):
+        for i in run_order[0]:
+            if seek_achievement(i): run_order.remove(i)
+
+    # try to look for ahivement, if so then look timer
+    if seek_achievement(frame, run_order[0]):
+        run_order.popleft()
+        # seek_timer(frame)
 
 
 
