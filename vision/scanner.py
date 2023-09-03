@@ -10,9 +10,9 @@ import numpy as np
 
 # video = cv.VideoCapture('./vods/1879662076.mp4')   # VideoCapture object to load in video
 
-# while video.isOpened():
+# while video.isOpened(): 
 #     bool, frame = video.read()      # reads a frame (Matrix); returns true if successful
-#     if (bool == False): 
+#     if (bool == False):             # this line is nessacary for exiting the loop     
 #         print("could not read frame. video end?...")
 #         break
 

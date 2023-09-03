@@ -16,7 +16,6 @@ def period():        # returns a generator object
         count = count % 3 
 
 
-
 def progress(current, total, animation = period(), status=''):      # question is what to base progress of? percentage of vod? percentage of run?
     current, total = int(current), int(total)
     bar_len = 60                        # 60 chars long
@@ -63,3 +62,8 @@ for col in df.columns.values[3:]:
 
 # print(df.dtypes)
 
+def recordValue(col, time):
+    df[col] = pd.concat([df[col], pd.Series([time])])      #https://stackoverflow.com/questions/13331518/how-to-add-a-single-item-to-a-pandas-series
+
+def recordRow(row : list[tuple]):       # TODO: (col, value) add data to df as incomplete row....
+    pass

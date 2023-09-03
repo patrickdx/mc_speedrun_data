@@ -1,11 +1,12 @@
 from enum import Enum
 from numpy import ndarray as Mat
 import cv2 as cv
+import os 
 
-class Match:         # class mapping Template to found matched position (x1,y1), (x2,y2)
+class Match:         # Wrapper template class with a matched position (x1,y1), (x2,y2)
     
     def __init__(self, pt1: tuple, pt2: tuple, template):
-        self.pt1 = pt1      # the position of the match
+        self.pt1 = pt1      
         self.pt2 = pt2 
         self.template = template
     
@@ -14,21 +15,20 @@ class Match:         # class mapping Template to found matched position (x1,y1),
         # cv.putText(img, self.template.desc, (self.pt1[0], self.pt1[1] - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, 255, 1)
 
     def __str__(self):
-        return f'{self.template.desc} match at {self.pt1} to {self.pt2}'
+        return f'{self.template.value} match at {self.pt1} to {self.pt2}'
 
-class Template:        # Singleton (for now)
+class Template:        
     
     def __init__(self, path, *, value, THRESHOLD=0.8):          
         self.img = cv.imread(path, cv.IMREAD_GRAYSCALE)
         self.value = value                                  # for the program to interpret the image as a value 
         assert self.img is not None, 'file not found'
-        self.desc = path
         self.height, self.width = self.img.shape[0], self.img.shape[1]
         self.THRESHOLD = THRESHOLD           # how 'lenient' it should be about the successful match of a template
 
 
     def __str__(self):
-        return f'{self.desc} template by {self.width} x {self.height}'
+        return f'{self.value} template by {self.width} x {self.height}'
 
 
 class ROI(Enum):        # enum is better because immutable/iterable/can define functionality on the enum members.
@@ -38,7 +38,7 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
     '''
 
     achievement =  ((1018,0),(1280,131))
-    igt_timer = ((1121,53),(1261,72))
+    igt_timer = ((1166,53), (1259, 71))
 
     def crop(self, img : Mat):        # returns cropped version of original image. for template matching purposes it should always be grayscale (igt_timer.crop())
         img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -57,9 +57,9 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
 
 
 
-class Images():
-    IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location
-    
+class Image():
+    IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location, .. is relative to where template.py is run
+
     NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
     BASTION = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
     FORTRESS = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
@@ -70,7 +70,7 @@ class Images():
 
   
     ZERO  = Template(IMG_PATH + '0.png', value=0, THRESHOLD= 0.9)
-    ONE  =  Template(IMG_PATH + '1.png', value=1, THRESHOLD= 0.9)
+    ONE  =  Template(IMG_PATH + '1.png', value=1, THRESHOLD= 0.8)
     TWO  = Template(IMG_PATH + '2.png', value=2, THRESHOLD= 0.9)
     THREE  =  Template(IMG_PATH + '3.png', value=3, THRESHOLD= 0.9) 
     FOUR  =  Template(IMG_PATH + '4.png', value=4, THRESHOLD= 0.9)
@@ -81,10 +81,10 @@ class Images():
     NINE  =  Template(IMG_PATH + '9.png', value=9, THRESHOLD= 0.9)
 
     def numbers() -> tuple[Template]:
-        return (Images.ZERO, Images.ONE, Images.TWO, Images.THREE, Images.FOUR, Images.FIVE, Images.SIX, Images.SEVEN, Images.EIGHT, Images.NINE)
+        return (Image.ZERO, Image.ONE, Image.TWO, Image.THREE, Image.FOUR, Image.FIVE, Image.SIX, Image.SEVEN, Image.EIGHT, Image.NINE)
 
     def achievements() -> list[Template]:
-        return [Images.NETHER_ENTRY, Images.BASTION, Images.FORTRESS, Images.NETHER_EXIT, Images.STRONGHOLD, Images.END, Images.RUN_FINISH]
+        return [Image.NETHER_ENTRY, Image.BASTION, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END, Image.RUN_FINISH]
 
     def run_order() -> list[Template]:
-        return [Images.NETHER_ENTRY, [Images.BASTION, Images.FORTRESS], Images.NETHER_EXIT, Images.STRONGHOLD, Images.END]    # [] is when order doesnt matter 
+        return [Image.NETHER_ENTRY, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
