@@ -46,8 +46,8 @@ def seek_timer(frame, debug = False):      # triggered only when found new miles
 
 
 
-def seek_achievement(frame, achievement : Template, debug = False) -> bool:     # Checks if match was successful and matched expected amount of items.
-         
+def seek_achievement(frame, achievement : list[Template], debug = False) -> bool:     # Checks if match was successful and matched expected amount of items.
+    
     cropped = ROI.achievement.crop(frame)
     template = achievement
     matches = match_Template(cropped, [template])
@@ -129,8 +129,8 @@ def show_video():
 
         # display('video', frame)            # show video
         # seek_timer(frame, debug=True)    # show timer 
-        next = current_run.next_achivement()
-        seek_achievement(frame, next, debug=True)
+        advs = current_run.seek_next()
+        seek_achievement(frame, advs, debug=True)
 
         
 

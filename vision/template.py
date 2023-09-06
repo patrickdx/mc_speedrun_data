@@ -87,4 +87,4 @@ class Image():
         return [Image.NETHER_ENTRY, Image.BASTION, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END, Image.RUN_FINISH]
 
     def run_order() -> list[Template]:
-        return [Image.NETHER_ENTRY, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
+        return [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
