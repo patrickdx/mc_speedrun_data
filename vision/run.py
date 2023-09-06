@@ -20,44 +20,52 @@ class run():
 
     def __init__(self):
         
-        self.sequence: dict[Template, str] = {
+        self.times: dict[Template, str] = {
             Image.NETHER_ENTRY: '',
             Image.BASTION: '',
             Image.FORTRESS: '',
-            Image.NETHER_EXIT: '',
+            Image.NETHER_EXIT: '',          # iff above 2 are completed
             Image.STRONGHOLD: '',
             Image.END: ''
         }
+        self.run_order = iter(self.times)
+        self.current = Image.NETHER_ENTRY  # achievement currently looking for 
+        self.sequence = (struct for struct in Image.run_order())                
 
 
-        # self.run_order = iter(self.sequence)
-        # self.current = next(self.run_order)         # the achivement ur currently looking forr
+    def record(self, achivement : Template, time : str):
+        self.times[achivement] = time 
+        logging.info(f"Recorded {achivement.value} at time {time}")
+        logging.info(f"Seeking next: {self.current.value}")
 
-
-    def record(self, achievement : Template, time : str):
-        logging.info(f'looking for {achievement.value}')
-        # wont do anythign if already found achivement 
-        if self.sequence[achievement] == '':   
-            self.sequence[achievement] = time
-            logging.info(f"Found {achievement.value} at time {time}")
-        
-        else: logging.info("achivement already found")
  
 
+    
+    def found(self, adv: Template) -> bool:
+        return self.times[adv] != ''
 
-    def check_valid(self, adv: Template) -> bool:         # checks if adv is ok to add to run 
-        completed = [key for key in self.sequence if self.sequence[key] != '']
-        # simple checks to validate the run 
-        if (adv == Image.BASTION or adv == Image.FORTRESS) and Image.NETHER_ENTRY not in completed: return False
-        if adv == Image.STRONGHOLD and (Image.NETHER_ENTRY not in completed or Image.NETHER_EXIT not in completed): return False
-        assert time[Image.NETHER_EXIT] > Image.FORTRESS, 'invalid'
-        return True 
+    # this is with the idea that you bother to match adv already found, so not that slow 
+    def seek_next(self) -> list[Template]:      # would be called to obtain next adv to be searched
+        seek = [] 
+        if not self.found(Image.NETHER_ENTRY): seek.append([Image.NETHER_ENTRY])
 
+        elif self.in_nether():
+            # if not self.found(Image.BASTION): seek.append(Image.BASTION)      if we define such an order, may have some problems
+            # if not self.found(Image.FORTRESS): seek.append(Image.FORTRESS)
+            # if self.found(Image.BASTION) and self.found(Image.FORTRESS): seek.append(Image.NETHER_EXIT)
 
-    def export(self):
-        self.check_valid()
-        pass 
+            # or we can say 
+            seek.append([Image.BASTION, Image.FORTRESS, Image.NETHER_EXIT])
         
+        # nether is complete
+        else: self.found(Image.NETHER_EXIT): seek.append([Image.STRONGHOLD, Image.END])
+
+        remain = [struct for struct in seek if not self.found(struct)]   # advs with time still not found yet
+        logging.info(f"seeking next :D {remain}")
+        return remain
+        
+    def in_nether(self):
+        return self.found(Image.NETHER_ENTRY) and not self.found(Image.NETHER_EXIT)
 
 
 def test():

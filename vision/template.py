@@ -87,7 +87,5 @@ class Image():
     def achievements() -> list[Template]:
         return [Image.NETHER_ENTRY, Image.BASTION, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END, Image.RUN_FINISH]
 
-    def run_order() -> Iterator[Template]:
-        return (structure for structure in [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END])    # [] is when order doesnt matter 
-    
-print(Image.run_order)
+    def run_order() -> list[Template]:
+        return [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
