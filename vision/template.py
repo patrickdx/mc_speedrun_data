@@ -29,8 +29,10 @@ class Template:
 
 
     def __str__(self):
-        return f'{self.value} template by {self.width} x {self.height}'
-
+        return f'{self.value}'
+    
+    def __repr__(self) -> str:      # called when printing objects in list, for debugging purposes
+        return str(self)
 
 class ROI(Enum):        # enum is better because immutable/iterable/can define functionality on the enum members.
     '''
@@ -61,7 +63,7 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
 class Image():
     IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location, .. is relative to where template.py is run
 
-    NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether')
+    NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether_entry')
     BASTION = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
     FORTRESS = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
     NETHER_EXIT = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')         # this should be found using timer freeze
@@ -89,3 +91,5 @@ class Image():
 
     def run_order() -> list[Template]:
         return [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
+
+    
