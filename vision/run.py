@@ -8,8 +8,11 @@ ROOT_DIR = project_root = os.path.abspath(os.path.dirname(__file__))            
 print(ROOT_DIR)
 
 logging.basicConfig(format= '%(levelname)s - %(message)s', level = logging.INFO)
-logging.info("hello friend")
+logger = logging.getLogger(__name__)
 
+
+
+# try to match everything approach, maybe slower?
 class run():
 
     '''This is the intended object to be added into the spreadsheet, as a row'''
@@ -25,30 +28,45 @@ class run():
             Image.STRONGHOLD: '',
             Image.END: ''
         }
-        self.run_order = iter(self.sequence)
-        self.current = next(self.run_order)         # the achivement ur currently looking forr
 
 
-    def record(self, achivement : Template, time : str):
+        # self.run_order = iter(self.sequence)
+        # self.current = next(self.run_order)         # the achivement ur currently looking forr
 
+
+    def record(self, achievement : Template, time : str):
+        logging.info(f'looking for {achievement.value}')
         # wont do anythign if already found achivement 
-        if (self.current == achivement or self.current == Image.BASTION) and self.sequence[achivement] == '':   
-            self.sequence[achivement] = time 
-            logging.info(f"Found {achivement.value} at time {time}")
-            self.current = next(self.run_order)
-            logging.info(f"Seeking next: {self.current.value}")
- 
+        if self.sequence[achievement] == '':   
+            self.sequence[achievement] = time
+            logging.info(f"Found {achievement.value} at time {time}")
         
+        else: logging.info("achivement already found")
+ 
 
-    def next_achivement(self):
-        return self.current
+
+    def check_valid(self, adv: Template) -> bool:         # checks if adv is ok to add to run 
+        completed = [key for key in self.sequence if self.sequence[key] != '']
+        # simple checks to validate the run 
+        if (adv == Image.BASTION or adv == Image.FORTRESS) and Image.NETHER_ENTRY not in completed: return False
+        if adv == Image.STRONGHOLD and (Image.NETHER_ENTRY not in completed or Image.NETHER_EXIT not in completed): return False
+        assert time[Image.NETHER_EXIT] > Image.FORTRESS, 'invalid'
+        return True 
+
+
+    def export(self):
+        self.check_valid()
+        pass 
+        
 
 
 def test():
     xd = run()
     xd.record(Image.NETHER_ENTRY, '00:45')
+    
 
 test()
+
 
 
 

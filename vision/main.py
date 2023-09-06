@@ -3,18 +3,20 @@ import os
 from template import * 
 from matcher import match_Template
 import spreadsheet
+from run import logger
 
 
 
-def display(str, img):
+def display(str, img, wait = False):
     cv.imshow(str, img)
-    key = cv.waitKey(0)
+    if (wait is True): key = cv.waitKey(0)
+    else: key = cv.waitKey(1)
     
-    if (key == ord('q')):
+    if key == ord('q'):
         cv.destroyAllWindows()
         exit()
 
-    if (key == ord('s')):  
+    if key == ord('s'):  
         print("saving screenshot...")
         print(cv.imwrite('../images/screenshot.png', img))          # this only works if its in vision library btw 
         print(cv.error())
@@ -68,6 +70,20 @@ def seek_achievement(frame, achievement : Template, debug = False) -> bool:     
         return True 
     
     return False
+
+
+def seek_achievements(frame, achievements : list[Template] , debug = False):
+          
+    adv_frame = ROI.achievement.crop(frame)
+    matches = match_Template(adv_frame, achievements)
+    print(len(matches))
+    if (len(matches) >= 1):
+        display('achievement', adv_frame)
+
+
+
+
+
 
 
 def seek_reset():   # if reset then go back to start
@@ -124,13 +140,14 @@ current_run = run()
 def show_video():    
     vid = cv.VideoCapture(path)
     while vid.isOpened():
+
         ret, frame = vid.read()
+        logger.info(f'{int(vid.get(cv.CAP_PROP_POS_FRAMES))}/{int(vid.get(cv.CAP_PROP_FRAME_COUNT))}')
 
-
-        # display('video', frame)            # show video
+        display('video', frame)            # show video
         # seek_timer(frame, debug=True)    # show timer 
-        next = current_run.next_achivement()
-        seek_achievement(frame, next, debug=True)
+        seek_achievement(frame, Image.NETHER_ENTRY)
+        # seek_achievements(frame, current_run.next_achivements(), debug=True)
 
         
 

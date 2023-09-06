@@ -2,6 +2,7 @@ from enum import Enum
 from numpy import ndarray as Mat
 import cv2 as cv
 import os 
+from typing import Iterator
 
 class Match:         # Wrapper template class with a matched position (x1,y1), (x2,y2)
     
@@ -86,5 +87,7 @@ class Image():
     def achievements() -> list[Template]:
         return [Image.NETHER_ENTRY, Image.BASTION, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END, Image.RUN_FINISH]
 
-    def run_order() -> list[Template]:
-        return [Image.NETHER_ENTRY, Image.FORTRESS, Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
+    def run_order() -> Iterator[Template]:
+        return (structure for structure in [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END])    # [] is when order doesnt matter 
+    
+print(Image.run_order)
