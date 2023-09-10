@@ -1,23 +1,8 @@
 import cv2 as cv
 import numpy as np
-from template import Template, Match
+from template import * 
 
 
-# def match_single(img, temp: Template) -> Match:
-#     res = cv.matchTemplate(img, temp.img, cv.TM_CCOEFF_NORMED)   # output image (W-w+1, H-h+1)       243 x 238
-#     min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
-
-#     top_left = max_loc   # (x,y)
-#     bottom_right = (max_loc[0] + temp.width, max_loc[1] + temp.height)    
-
-#     # If match:
-#     match = Match(top_left, bottom_right, temp)
-#     img1 = img.copy()
-#     match.draw(img1)
-#     return match 
-
-#     # Else:
-#     return None
 def match_Template(img, temps: list[Template]) -> list[Match]:
     '''
     This function uses thresholding to match multiple templates at once. Templates may match more than once
@@ -41,6 +26,45 @@ def match_Template(img, temps: list[Template]) -> list[Match]:
                 
     matches.sort(key = lambda x : x.pt1[0])         # sort by x position
     return matches 
+
+
+
+def seek_achievements(frame, achievements : list[Template] , debug = False):
+          
+    adv_frame = ROI.achievement.crop(frame) 
+    matches = match_Template(adv_frame, achievements)       # only expecting 1 match here 
+
+    if len(matches) == 1:
+        return matches[0].template
+        # current_run.record(matched, seek_timer(frame)) 
+    
+
+
+
+def seek_timer(frame, debug = False):      # triggered only when found new milestone
+    TIMER_LENGTH = 7
+    cropped = ROI.igt_timer.crop(frame)      
+    
+    templates = Image.numbers()
+    matches = match_Template(cropped, templates)
+    print(len(matches))
+    nums = []
+    for match in matches: 
+        nums.append(match.template.value)
+        match.draw(cropped)
+        
+    if debug is True: display('timer', cropped)
+    if len(matches) == TIMER_LENGTH:
+    
+        nums = [str(num) for num in nums]
+        mins = nums[0] + nums[1]
+        secs = nums[2] + nums[3] 
+        ms =   nums[4] + nums[5] + nums[6]
+        return f'{mins}:{secs}:{ms}'
+    
+
+    # return mins*60 + secs + ms/1000
+
 
 
         

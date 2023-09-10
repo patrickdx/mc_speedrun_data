@@ -4,8 +4,6 @@ import logging
 import os 
 from template import Image, Template
 
-ROOT_DIR = project_root = os.path.abspath(os.path.dirname(__file__))            # this is the project root 
-print(ROOT_DIR)
 
 logging.basicConfig(format= '%(levelname)s - %(message)s', level = logging.INFO)
 logger = logging.getLogger(__name__)

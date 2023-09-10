@@ -9,7 +9,7 @@ from run import run
 
 def display(str, img, wait = False):
     cv.imshow(str, img)
-    if (wait is True): key = cv.waitKey(0)
+    if (wait is True): key = cv.waitKey(0)      # frame by frame 
     else: key = cv.waitKey(1)
     
     if key == ord('q'):
@@ -85,47 +85,58 @@ def seek_achievements(frame, achievements : list[Template] , debug = False):
 
 
 
-
-
-
-
-def seek_reset():   # if reset then go back to start
-    pass 
-
 def seek_timer_freeze(frames: list) -> bool:      # Returns true if timer is the same for all frames passed
-    res = seek_timer(frames[0])
-    for frame in frames:
-        if res != seek_timer(frame): return False 
+    # str = []
+    # for frame in frames:
+    #     str.append(seek_timer(frame))
+    # print(str)
 
+    res = seek_timer(frames[0])
+    for i in range(1, len(frames)):
+        time = seek_timer(frames[i])
+        if time == None or res != time: return False 
+
+    logger.info("frame freeze found")
+    # current_run.record(???, res)      TODO: record doesn't make sense since there is no template here... need to find abetter way to record and represent events in general
     return True
 
-
-   
     
 cv.destroyAllWindows()
 
 
 # ------------------- debugging methods ----------------------------
 
-path = '../vods/full_run.mp4'
+from package import VOD_DIR
+
 
 current_run = run()
-vid = cv.VideoCapture(path)
+vid = cv.VideoCapture(VOD_DIR + 'full_run.mp4')
 if not vid.isOpened(): raise FileNotFoundError("Video not found...")
 vid.set(cv.CAP_PROP_POS_FRAMES, 10000)
 ret, frame = vid.read()     # returns false if frame is unable to be read
 
+from collections import deque       # fast pop for beginning elements 
+recent_frames = deque()
+
+
 while vid.isOpened():
-    frame1 = frame
-    frame2 = frame1
     ret, frame = vid.read()
     logger.info(f'{int(vid.get(cv.CAP_PROP_POS_FRAMES))}/{int(vid.get(cv.CAP_PROP_FRAME_COUNT))}')
 
-    display('video', frame)            # show video
+    # cache recent frames 
+    recent_frames.append(frame) 
+    if (len(recent_frames) > 5): recent_frames.popleft()
+    
+
+
+
+
+    display('video', frame, wait=True)            # show video
     # seek_timer(frame, debug=True)    # show timer 
-    # advs = current_run.seek_next()
+    advs = current_run.seek_next()
     # seek_achievements(frame, advs, debug=True)
-    print(seek_timer_freeze([frame1, frame, frame2]))
+
+    if (len(recent_frames) == 5): seek_timer_freeze([frame for frame in recent_frames])
 
     
 

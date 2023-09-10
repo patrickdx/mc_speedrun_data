@@ -1,5 +1,5 @@
 # this gets executed when import vision, all stuff is added to vision package namespace
-
+print("vision imported.")
 
 import cv2 as cv    
 
@@ -10,4 +10,3 @@ def display(str, img):
 
 something = 5
 
-print(dir())

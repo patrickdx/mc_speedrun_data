@@ -19,7 +19,7 @@ class Match:         # Wrapper template class with a matched position (x1,y1), (
         return f'{self.template.value} match at {self.pt1} to {self.pt2}'
 
 class Template:        
-    
+
     def __init__(self, path, *, value, THRESHOLD=0.8):          
         self.img = cv.imread(path, cv.IMREAD_GRAYSCALE)
         self.value = value                                  # for the program to interpret the image as a value 
@@ -33,6 +33,8 @@ class Template:
     
     def __repr__(self) -> str:      # called when printing objects in list, for debugging purposes
         return str(self)
+
+    
 
 class ROI(Enum):        # enum is better because immutable/iterable/can define functionality on the enum members.
     '''
@@ -60,28 +62,30 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
 
 
 
-class Image():
-    IMG_PATH = '../assets/'     # TODO: find a way to write this without .. i.e. regardless of file location, .. is relative to where template.py is run
 
-    NETHER_ENTRY = Template(IMG_PATH + 'adv_nether.png', value = 'nether_entry')
-    BASTION = Template(IMG_PATH + 'adv_bastion.png', value = 'bastion')
-    FORTRESS = Template(IMG_PATH + 'adv_fortress.png', value = 'fortress')
-    NETHER_EXIT = Template(IMG_PATH + 'adv_nether.png', value = 'nether_exit')         # this should be found using timer freeze
-    STRONGHOLD = Template(IMG_PATH + 'adv_stronghold.png', value = 'stronghold')
-    END = Template(IMG_PATH + 'adv_end.png', value = 'end')
-    RUN_FINISH = Template(IMG_PATH + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
+class Image():
+    from package import ASSETS_DIR      # TODO: find a way to write this without .. i.e. regardless of file location, .. is relative to where template.py is run
+    
+
+    NETHER_ENTRY = Template(ASSETS_DIR + 'adv_nether.png', value = 'nether_entry',  THRESHOLD=0.9)
+    BASTION = Template(ASSETS_DIR + 'adv_bastion.png', value = 'bastion',  THRESHOLD=0.9)
+    FORTRESS = Template(ASSETS_DIR + 'adv_fortress.png', value = 'fortress', THRESHOLD=0.9)
+    NETHER_EXIT = Template(ASSETS_DIR + 'adv_end.png', value = 'nether_exit')         # this should be found using timer freeze
+    STRONGHOLD = Template(ASSETS_DIR + 'adv_stronghold.png', value = 'stronghold',  THRESHOLD=0.9)
+    END = Template(ASSETS_DIR + 'adv_end.png', value = 'end')
+    RUN_FINISH = Template(ASSETS_DIR + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
 
   
-    ZERO  = Template(IMG_PATH + '0.png', value=0, THRESHOLD= 0.9)
-    ONE  =  Template(IMG_PATH + '1.png', value=1, THRESHOLD= 0.8)
-    TWO  = Template(IMG_PATH + '2.png', value=2, THRESHOLD= 0.9)
-    THREE  =  Template(IMG_PATH + '3.png', value=3, THRESHOLD= 0.9) 
-    FOUR  =  Template(IMG_PATH + '4.png', value=4, THRESHOLD= 0.9)
-    FIVE  =  Template(IMG_PATH + '5.png', value=5, THRESHOLD= 0.9)
-    SIX  = Template(IMG_PATH + '6.png', value=6, THRESHOLD= 0.9)
-    SEVEN  =  Template(IMG_PATH + '7.png', value=7, THRESHOLD= 0.9)
-    EIGHT  =  Template(IMG_PATH + '8.png', value=8, THRESHOLD= 0.9)
-    NINE  =  Template(IMG_PATH + '9.png', value=9, THRESHOLD= 0.9)
+    ZERO  = Template(ASSETS_DIR + '0.png', value=0, THRESHOLD= 0.9)
+    ONE  =  Template(ASSETS_DIR + '1.png', value=1, THRESHOLD= 0.8)
+    TWO  = Template(ASSETS_DIR + '2.png', value=2, THRESHOLD= 0.9)
+    THREE  =  Template(ASSETS_DIR + '3.png', value=3, THRESHOLD= 0.9) 
+    FOUR  =  Template(ASSETS_DIR + '4.png', value=4, THRESHOLD= 0.9)
+    FIVE  =  Template(ASSETS_DIR + '5.png', value=5, THRESHOLD= 0.9)
+    SIX  = Template(ASSETS_DIR + '6.png', value=6, THRESHOLD= 0.9)
+    SEVEN  =  Template(ASSETS_DIR + '7.png', value=7, THRESHOLD= 0.9)
+    EIGHT  =  Template(ASSETS_DIR + '8.png', value=8, THRESHOLD= 0.9)
+    NINE  =  Template(ASSETS_DIR + '9.png', value=9, THRESHOLD= 0.9)
 
     def numbers() -> tuple[Template]:
         return (Image.ZERO, Image.ONE, Image.TWO, Image.THREE, Image.FOUR, Image.FIVE, Image.SIX, Image.SEVEN, Image.EIGHT, Image.NINE)
@@ -92,4 +96,5 @@ class Image():
     def run_order() -> list[Template]:
         return [Image.NETHER_ENTRY, [Image.BASTION, Image.FORTRESS], Image.NETHER_EXIT, Image.STRONGHOLD, Image.END]    # [] is when order doesnt matter 
 
-    
+
+

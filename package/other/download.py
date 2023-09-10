@@ -7,7 +7,7 @@ import argparse
 # good practice to store api creds via environment variables
 client_id = os.environ['twitch_client_id']
 client_secret = os.environ['twitch_client_secret']
-
+VOD_FOLDER = '/vods'
 
 def auth_token():
     r = requests.post('https://id.twitch.tv/oauth2/token', data = {'client_id' : client_id, 'client_secret' : client_secret, 'grant_type' : 'client_credentials'})
@@ -44,9 +44,10 @@ def download_vod(id, *, start: int, end: int, name = None):      # usage: Twitch
     -q : quality 1080p60, 720p60 ...
     '''
     name = str(id) if (name is None) else name
-    save_dir = "vods"                                # the path where the vods get saved
+    from package import VOD_DIR
+    
 
-    command = f'TwitchDownloaderCLI.exe videodownload --id {id} -b {start} -e {end} --quality 720p60 -o {save_dir}\{name}.mp4'
+    command = f'TwitchDownloaderCLI.exe videodownload --id {id} -b {start} -e {end} --quality 720p60 -o {VOD_DIR}{name}.mp4'
 
     print(command)
     print("Downloading vod...")
