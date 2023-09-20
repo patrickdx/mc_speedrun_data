@@ -4,8 +4,8 @@ from template import *
 from matcher import match_Template
 import spreadsheet
 from run import logger
-from run import run 
-
+from run import Run 
+import numpy as np 
 
 def display(str, img, wait = False):
     cv.imshow(str, img)
@@ -29,9 +29,9 @@ def seek_timer(frame, debug = False):      # triggered only when found new miles
     
     templates = Image.numbers()
     matches = match_Template(cropped, templates)
-    print(len(matches))
+    print(len(matches))          # matches should be 7 in length
     nums = []
-    for match in matches: 
+    for match in matches:      
         nums.append(match.template.value)
         match.draw(cropped)
         
@@ -48,34 +48,18 @@ def seek_timer(frame, debug = False):      # triggered only when found new miles
 
 
 
-def seek_achievement(frame, achievement : list[Template], debug = False) -> bool:     # Checks if match was successful and matched expected amount of items.
+def seek_achievement(frame, achievement : Template, debug = False) -> bool:     # Checks if match was successful and matched expected amount of items.
     
     cropped = ROI.achievement.crop(frame)
-    template = achievement
-    matches = match_Template(cropped, [template])
-
-
-    if debug is True:
-        for match in matches:
-            match.draw(cropped)
-            display('achivement', cropped)
-
-
-    if len(matches) == 1:
-    
-        achievement = matches[0].template
-        # things to do if match was successful
-        display('achievement', cropped)
-        run.record(achievement, seek_timer(frame))    
-        return True 
-    
-    return False
+    match = match_Template(cropped, [achievement])
+    if len(match) == 1: return seek_timer(frame)
+    return ""
 
 
 def seek_achievements(frame, achievements : list[Template] , debug = False):
           
     adv_frame = ROI.achievement.crop(frame) 
-    matches = match_Template(adv_frame, achievements)       # only expecting 1 match here 
+    matches = match_Template(adv_frame, achievements)       # only expecting 1 match here for a frame 
 
     if len(matches) == 1:
         matched = matches[0].template
@@ -84,23 +68,61 @@ def seek_achievements(frame, achievements : list[Template] , debug = False):
 
 
 
+    # if debug is True:
+    #     for match in matches:
+    #         match.draw(cropped)
+    #         display('achivement', cropped)
 
-def seek_timer_freeze(frames: list) -> bool:      # Returns true if timer is the same for all frames passed
+
+    # if len(matches) == 1:
+    
+    #     achievement = matches[0].template
+    #     # things to do if match was successful
+    #     display('achievement', cropped)
+    #     Run.record(achievement, seek_timer(frame))    
+    #     return True 
+
+
+def seek_timer_freeze(frames: list) -> str:      # Returns true if timer is the same for all frames passed
+    if len(frames) == 0: return False 
+
     # str = []
     # for frame in frames:
     #     str.append(seek_timer(frame))
     # print(str)
 
-    res = seek_timer(frames[0])
-    for i in range(1, len(frames)):
-        time = seek_timer(frames[i])
-        if time == None or res != time: return False 
+    # image comparison way 
+    if not 
+    timers = [ROI.igt_timer.crop(frame) for frame in frames]
+    result = all(np.array_equal(time, timers[0]) for time in timers)
+    if result: 
+        logger.info("frame feeze found")
+        return seek_timer(frame[0])
+    
+    return ''
 
-    logger.info("frame freeze found")
-    # current_run.record(???, res)      TODO: record doesn't make sense since there is no template here... need to find abetter way to record and represent events in general
-    return True
+
+    # seek timer version 
+    # res = seek_timer(frames[0])
+    # for i in range(1, len(frames)):
+    #     time = seek_timer(frames[i])
+    #     if time == None or res != time: return False 
 
     
+
+    # logger.info("frame freeze found")
+    # # current_run.record(???, res)      TODO: record doesn't make sense since there is no template here... need to find abetter way to record and represent events in general
+    # return True
+
+
+
+def seek_pause() -> bool: 
+    quit = ROI.quit_button.crop(frame)
+    match = match_Template(quit, quitButtonTemplate)       # only expecting 1 match here for a frame 
+    if len(match) == 1: return True 
+    return False 
+
+
 cv.destroyAllWindows()
 
 
@@ -109,13 +131,14 @@ cv.destroyAllWindows()
 from package import VOD_DIR
 
 
-current_run = run()
+current_run = Run()
 vid = cv.VideoCapture(VOD_DIR + 'full_run.mp4')
 if not vid.isOpened(): raise FileNotFoundError("Video not found...")
 vid.set(cv.CAP_PROP_POS_FRAMES, 10000)
 ret, frame = vid.read()     # returns false if frame is unable to be read
 
 from collections import deque       # fast pop for beginning elements 
+from run import *
 recent_frames = deque()
 
 
@@ -128,21 +151,21 @@ while vid.isOpened():
     if (len(recent_frames) > 5): recent_frames.popleft()
     
 
-
-
-
     display('video', frame, wait=True)            # show video
     # seek_timer(frame, debug=True)    # show timer 
-    advs = current_run.seek_next()
-    # seek_achievements(frame, advs, debug=True)
+
+    events = current_run.seek_next()
+    # seek events method 
+    for event in events:
+        if event.getType() == EventType.TIMER_FREEZE: timer = seek_timer_freeze(recent_frames)
+        if event.getType() == EventType.TEMPLATE_MATCH: timer = seek_achievements(frame, [event], debug = True)     # need to test whether formulating all events first and then calling is better
+        else: raise RuntimeError("This event is not recognized.")
+        current_run.record(event, timer)
+
 
     if (len(recent_frames) == 5): seek_timer_freeze([frame for frame in recent_frames])
 
     
-
-
-def show_timer():
-    pass
-
-
-
+    #  event = current_run.seek_next() 
+    # if (event.type == 'achivement') seek_acvhiements(event), some way find template off event.. 
+    # if (event.type == 'timer_freeze') timer_freeze(event), current.run.record(event.name, time)

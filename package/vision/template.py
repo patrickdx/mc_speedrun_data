@@ -45,7 +45,10 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
     achievement =  ((1018,0),(1280,131))
     igt_timer = ((1166,53), (1259, 71))
 
-    def crop(self, img : Mat):        # returns cropped version of original image. for template matching purposes it should always be grayscale (igt_timer.crop())
+    def crop(self, img : Mat):        
+        '''
+        returns cropped version of original image. for template matching purposes it should always be grayscale (igt_timer.crop())
+        '''
         img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         dim = self.value 
         x = dim[0][0], dim[1][0]
@@ -64,18 +67,16 @@ class ROI(Enum):        # enum is better because immutable/iterable/can define f
 
 
 class Image():
-    from package import ASSETS_DIR      # TODO: find a way to write this without .. i.e. regardless of file location, .. is relative to where template.py is run
-    
+    from package import ASSETS_DIR      
 
     NETHER_ENTRY = Template(ASSETS_DIR + 'adv_nether.png', value = 'nether_entry',  THRESHOLD=0.9)
     BASTION = Template(ASSETS_DIR + 'adv_bastion.png', value = 'bastion',  THRESHOLD=0.9)
     FORTRESS = Template(ASSETS_DIR + 'adv_fortress.png', value = 'fortress', THRESHOLD=0.9)
-    NETHER_EXIT = Template(ASSETS_DIR + 'adv_end.png', value = 'nether_exit')         # this should be found using timer freeze
+    # NETHER_EXIT
     STRONGHOLD = Template(ASSETS_DIR + 'adv_stronghold.png', value = 'stronghold',  THRESHOLD=0.9)
-    END = Template(ASSETS_DIR + 'adv_end.png', value = 'end')
-    RUN_FINISH = Template(ASSETS_DIR + 'adv_nether.png', value = 'finished')             # maybe better way of detecting when run is over 
+    END = Template('adv_end.png', value = 'end')
+    # RUN_FINISH 
 
-  
     ZERO  = Template(ASSETS_DIR + '0.png', value=0, THRESHOLD= 0.9)
     ONE  =  Template(ASSETS_DIR + '1.png', value=1, THRESHOLD= 0.8)
     TWO  = Template(ASSETS_DIR + '2.png', value=2, THRESHOLD= 0.9)

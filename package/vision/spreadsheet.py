@@ -2,6 +2,7 @@
 import pandas as pd
 import sys
 import time
+from package.vision.run import Run
 ''' 
 A spreadsheet containing raw run data only, can fill with aggregations later (avg times of all cols, etc...)
 '''
@@ -29,41 +30,66 @@ def progress(current, total, animation = period(), status=''):      # question i
 #     time.sleep(0.5)
 
 
-cols = [    
-    'video_url',        
-    'date',
-    'timestamp',
-    'reset_time', 
-    'nether_entry',
-    'found_bastion',
-    'found_fortress',
-    'nether_exit',
-    'stronghold_entry',
-    'end_entry',
-    'dragon_kill',
-    'elasped_time',
-]
+# t=3h30m38s
+def get_vod_timestamp(currFrame: int, fps = 60, offset = 0):      # how much frames/time was skipped from the beginning of vod 
+    secs = (currFrame + offset) / fps      
+    mins, secs = divmod(secs, 60)     # quotient , remainder
+    hrs, mins = divmod(mins, 60)
+    
+    print(hrs,mins,secs)
+    return '%dh%dm%ds' % (hrs, mins, secs)
+
+def get_current_date():
+    from datetime import date 
+    return str(date.today())
 
 
-df = pd.DataFrame(columns=cols)
-sample_row = ['Videos/12321321', '07/18/23', '03:23:05', '15:38', '05:01', '07:48', '11:43'	,'13:01', '15:54', '16:07',	'18:03'	,'18:12']
-df.loc[0] = sample_row      # add a new row starting at index 0
 
 
-# convert time cols to pandas datetime obj type
 
-df['date'] = pd.to_datetime(df['date'])   
-df['timestamp'] = pd.to_datetime(df['timestamp'], format = '%H:%M:%S')
 
-# for cols that track timer 
-for col in df.columns.values[3:]:
-    # print(df.columns.values)
-    df[col] = pd.to_datetime(df[col], format = '%M:%S')
 
-# print(df.dtypes)
 
-def recordValue(col, time):
-    df[col] = pd.concat([df[col], pd.Series([time])])      #https://stackoverflow.com/questions/13331518/how-to-add-a-single-item-to-a-pandas-series
 
-def recordRow(row : list[tuple]):       # TODO: (col, value) add data to df as incomplete row....
-    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dict = {
+    'video_id' : [], 
+    'date' : [], 
+    'timestamp': [], 
+    'nether_entry': [],
+    'bastion': [],
+    'fortress': [],
+    'nether_exit': [],
+    'stronghold': [],
+    'end_dim': [], 
+    'elasped_time': []
+}
+
+def record_row(run : Run):
+    for col, time in run.times:
+        dict[col].append(time) 
+
+
+# convert dict to df 
+values = list(dict.values())
+assert all(len(col) == len(values[0]) for col in values), 'columns are not all same length...'
+
+df = pd.DataFrame(dict)   
+df.to_csv('raw_data.csv') 
+
