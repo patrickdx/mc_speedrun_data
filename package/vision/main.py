@@ -37,7 +37,6 @@ def seek_timer(frame, debug = False):      # triggered only when found new miles
         
     if debug is True: display('timer', cropped)
     if len(matches) == TIMER_LENGTH:
-    
         nums = [str(num) for num in nums]
         mins = nums[0] + nums[1]
         secs = nums[2] + nums[3] 
@@ -48,7 +47,7 @@ def seek_timer(frame, debug = False):      # triggered only when found new miles
 
 
 
-def seek_achievement(frame, achievement : Template, debug = False) -> bool:     # Checks if match was successful and matched expected amount of items.
+def seek_achievement(frame, achievement : Template) -> str:     # Checks if match was successful and matched expected amount of items.
     
     cropped = ROI.achievement.crop(frame)
     match = match_Template(cropped, [achievement])
@@ -92,7 +91,6 @@ def seek_timer_freeze(frames: list) -> str:      # Returns true if timer is the 
     # print(str)
 
     # image comparison way 
-    if not 
     timers = [ROI.igt_timer.crop(frame) for frame in frames]
     result = all(np.array_equal(time, timers[0]) for time in timers)
     if result: 
@@ -123,28 +121,43 @@ def seek_pause() -> bool:
     return False 
 
 
+def seekReset(): 
+    pass 
+
+
+# 1. reset times, 2. record times 
+def onReset():
+    spreadsheet.save(current_run)
+    current_run.clear()
+     
+
+
+
+
+
+
+
 cv.destroyAllWindows()
 
 
 # ------------------- debugging methods ----------------------------
 
 from package import VOD_DIR
+from collections import deque       # fast pop for beginning elements 
+from run import *
 
-
+recent_frames = deque()
 current_run = Run()
 vid = cv.VideoCapture(VOD_DIR + 'full_run.mp4')
 if not vid.isOpened(): raise FileNotFoundError("Video not found...")
 vid.set(cv.CAP_PROP_POS_FRAMES, 10000)
 ret, frame = vid.read()     # returns false if frame is unable to be read
 
-from collections import deque       # fast pop for beginning elements 
-from run import *
-recent_frames = deque()
-
 
 while vid.isOpened():
     ret, frame = vid.read()
     logger.info(f'{int(vid.get(cv.CAP_PROP_POS_FRAMES))}/{int(vid.get(cv.CAP_PROP_FRAME_COUNT))}')
+
 
     # cache recent frames 
     recent_frames.append(frame) 
@@ -153,12 +166,12 @@ while vid.isOpened():
 
     display('video', frame, wait=True)            # show video
     # seek_timer(frame, debug=True)    # show timer 
-
+    
     events = current_run.seek_next()
     # seek events method 
     for event in events:
-        if event.getType() == EventType.TIMER_FREEZE: timer = seek_timer_freeze(recent_frames)
-        if event.getType() == EventType.TEMPLATE_MATCH: timer = seek_achievements(frame, [event], debug = True)     # need to test whether formulating all events first and then calling is better
+        if event.getType() == EventType.TIMER_FREEZE and seek_pause() == False: timer = seek_timer_freeze(recent_frames)
+        if event.getType() == EventType.TEMPLATE_MATCH: timer = seek_achievement(frame, [event], debug = True)     # need to test whether formulating all events first and then calling is better
         else: raise RuntimeError("This event is not recognized.")
         current_run.record(event, timer)
 

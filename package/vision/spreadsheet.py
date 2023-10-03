@@ -3,6 +3,8 @@ import pandas as pd
 import sys
 import time
 from package.vision.run import Run
+from run import logger 
+
 ''' 
 A spreadsheet containing raw run data only, can fill with aggregations later (avg times of all cols, etc...)
 '''
@@ -69,21 +71,37 @@ def get_current_date():
 
 
 dict = {
-    'video_id' : [], 
+    'id': [],
+    'video_id' : [],        # video + timestamp (expiry date 60 days?)
     'date' : [], 
-    'timestamp': [], 
     'nether_entry': [],
     'bastion': [],
     'fortress': [],
     'nether_exit': [],
     'stronghold': [],
-    'end_dim': [], 
+    'end': [], 
     'elasped_time': []
 }
 
-def record_row(run : Run):
-    for col, time in run.times:
-        dict[col].append(time) 
+id_count = 1 
+
+# create record off run data 
+def save(run : Run):
+    dict['id'] = id_count
+    dict['video_id'] = VOD_URL + get_vod_timestamp()
+
+    for event in run.events:
+        dict[str(event)].append(event.time)      # there might be nothing 
+
+    
+    id_count += 1
+
+    str = []
+
+    # log latest row 
+    for list in dict.values():
+        str.append(list[-1])
+    
 
 
 # convert dict to df 

@@ -40,7 +40,7 @@ def get_vod(id, *, latest = 1) -> list[str]:
 def download_vod(id, *, start: int, end: int, name = None):      # usage: TwitchDownloaderCLI.exe videodownload --id <vod-id-here> -o <name>.mp4
     '''
     -b : Time in seconds to crop beginning. 
-    -e : Time in seconds to crop ending.s
+    -e : Time in seconds to crop ending.
     -q : quality 1080p60, 720p60 ...
     '''
     name = str(id) if (name is None) else name
@@ -58,7 +58,7 @@ def download_vod(id, *, start: int, end: int, name = None):      # usage: Twitch
     if not os.path.isfile(f'vods/{name}.mp4'):
         raise Exception("could not download vod :(")
 
-def _time_format(time : str) -> int:  
+def time_format(time : str) -> int:  
     '''converts HH:MM:SS to seconds'''
     times = time.split(':')
     hrs = int(times[0])
@@ -83,7 +83,7 @@ def _time_format(time : str) -> int:
 
 
 # download_vod('1889111156', start= 3600, end = 3700)
-
+# download_vod('1889111156', start = time_format('2:00:00'), end = time_format('05:35:21'))
 # download_vod('1879662076', start = 2000, end = 10000)
 
 import vision.Milestone as d
